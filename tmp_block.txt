@@ -1,0 +1,28 @@
+  Widget _buildEffectGrid() {
+    return FrostedCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '特效库（可混搭）',
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 12),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: effectCatalog.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 2.6,
+              crossAxisSpacing: 18,
+              mainAxisSpacing: 18,
+            ),
+            itemBuilder: (context, index) {
+              final effect = effectCatalog[index];
+              return _EffectCard(effect: effect);
+            },
+          ),
+        ],

@@ -1,0 +1,49 @@
+pluginManagement {
+    def flutterSdkPath = {
+        def properties = new Properties()
+        file('local.properties').withInputStream { properties.load(it) }
+        def flutterSdk = properties.getProperty('flutter.sdk')
+        if (flutterSdk == null) {
+            throw new GradleException('flutter.sdk not set in local.properties')
+        }
+        flutterSdk
+    }.call()
+
+    includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
+
+    repositories {
+        maven { url = uri('https://maven.aliyun.com/repository/public') }
+        maven { url = uri('https://maven.aliyun.com/repository/google') }
+        maven { url = uri('https://maven.aliyun.com/repository/gradle-plugin') }
+        maven { url = uri('https://maven.aliyun.com/repository/android') }
+        maven { url = uri('https://maven.aliyun.com/repository/central') }
+        maven { url = uri('https://mirrors.tuna.tsinghua.edu.cn/flutter/download.flutter.io') }
+        maven { url = uri('https://storage.googleapis.com/download.flutter.io') }
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+plugins {
+    id 'dev.flutter.flutter-plugin-loader' version '1.0.0'
+    id 'com.android.application' version '8.7.0' apply false
+    id 'org.jetbrains.kotlin.android' version '1.8.22' apply false
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(org.gradle.api.initialization.resolve.RepositoriesMode.PREFER_SETTINGS)
+    repositories {
+        maven { url = uri('https://maven.aliyun.com/repository/public') }
+        maven { url = uri('https://maven.aliyun.com/repository/google') }
+        maven { url = uri('https://maven.aliyun.com/repository/gradle-plugin') }
+        maven { url = uri('https://maven.aliyun.com/repository/android') }
+        maven { url = uri('https://maven.aliyun.com/repository/central') }
+        maven { url = uri('https://mirrors.tuna.tsinghua.edu.cn/flutter/download.flutter.io') }
+        maven { url = uri('https://storage.googleapis.com/download.flutter.io') }
+        google()
+        mavenCentral()
+    }
+}
+
+include ':app'

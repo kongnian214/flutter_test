@@ -1,0 +1,79 @@
+buildscript {
+    ext.kotlin_version = '1.8.22'
+    repositories {
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        maven { url 'https://maven.aliyun.com/repository/android' }
+        maven { url 'https://maven.aliyun.com/repository/central' }
+        maven { url 'https://mirrors.tuna.tsinghua.edu.cn/flutter/download.flutter.io' }
+        maven { url 'https://storage.googleapis.com/download.flutter.io' }
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.7.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    repositories {
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        maven { url 'https://maven.aliyun.com/repository/android' }
+        maven { url 'https://maven.aliyun.com/repository/central' }
+        maven { url 'https://mirrors.tuna.tsinghua.edu.cn/flutter/download.flutter.io' }
+        maven { url 'https://storage.googleapis.com/download.flutter.io' }
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(':app')
+}
+
+tasks.register('clean', Delete) {
+    delete rootProject.buildDir
+}
+
+def mirrorRepositories = {
+    maven { url 'https://maven.aliyun.com/repository/public' }
+    maven { url 'https://maven.aliyun.com/repository/google' }
+    maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+    maven { url 'https://maven.aliyun.com/repository/android' }
+    maven { url 'https://maven.aliyun.com/repository/central' }
+    maven { url 'https://mirrors.tuna.tsinghua.edu.cn/flutter/download.flutter.io' }
+    maven { url 'https://storage.googleapis.com/download.flutter.io' }
+    google()
+    mavenCentral()
+}
+
+subprojects { project ->
+    project.repositories(mirrorRepositories)
+    project.buildscript {
+        repositories(mirrorRepositories)
+    }
+}
+
+subprojects { project ->
+    project.plugins.withId('com.android.library') {
+        project.android {
+            compileOptions {
+                sourceCompatibility JavaVersion.VERSION_11
+                targetCompatibility JavaVersion.VERSION_11
+            }
+            if (project.hasProperty('kotlinOptions')) {
+                kotlinOptions {
+                    jvmTarget = JavaVersion.VERSION_11.toString()
+                }
+            }
+        }
+    }
+}
