@@ -247,7 +247,5 @@ class InteractionTriggerController
 
 final interactionTriggerControllerProvider = StateNotifierProvider<
     InteractionTriggerController, InteractionTriggerState>((ref) {
-  final controller = InteractionTriggerController(ref)..initialize();
-  ref.onDispose(controller.dispose);
-  return controller;
+  return InteractionTriggerController(ref)..initialize();
 });

@@ -8,7 +8,7 @@ void main() {
   ) async {
     await tester.pumpWidget(const ProviderScope(child: AuroraShowcaseApp()));
 
-    expect(find.textContaining('圣诞氛围工作台'), findsOneWidget);
+    expect(find.textContaining('氛围控制台'), findsOneWidget);
     expect(find.text('节日倒计时'), findsOneWidget);
   });
 }

@@ -1,0 +1,71 @@
+workflows:
+  lcs1_release:
+    name: LCS1 Release
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      xcode: 16.0
+      cocoapods: default
+      java: 17
+      vars:
+        PACKAGE_NAME: com.example.lcs1
+        ANDROID_KEYSTORE_PATH: $CM_BUILD_DIR/lcs1.keystore
+        ANDROID_KEY_PROPERTIES: android/key.properties
+        IOS_EXPORT_OPTIONS: ios/Runner/ExportOptions.plist
+    cache:
+      cache_paths:
+        - ~/.pub-cache
+        - ~/Library/Caches/CocoaPods
+        - ~/.gradle
+    triggering:
+      events:
+        - push
+        - pull_request
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+    scripts:
+      - name: Flutter pub get
+        script: |
+          flutter --version
+          flutter clean
+          flutter pub get
+      - name: Generate Android keystore from encrypted env (set ANDROID_KEYSTORE_BASE64 + ANDROID_KEYSTORE_PASSWORD + KEY_ALIAS)
+        script: |
+          if [ ! -z "$ANDROID_KEYSTORE_BASE64" ]; then
+            echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$ANDROID_KEYSTORE_PATH"
+            cat > $ANDROID_KEY_PROPERTIES <<EOF
+          storePassword=$ANDROID_KEYSTORE_PASSWORD
+          keyPassword=$ANDROID_KEY_PASSWORD
+          keyAlias=$ANDROID_KEY_ALIAS
+          storeFile=$ANDROID_KEYSTORE_PATH
+          EOF
+          fi
+      - name: Flutter analyze & unit tests
+        script: |
+          flutter analyze
+          flutter test
+      - name: Build Android appbundle
+        script: |
+          flutter build appbundle --release --build-name=$BUILD_NUMBER --build-number=$BUILD_NUMBER
+      - name: Build Android APK (optional artifact)
+        script: |
+          flutter build apk --release --split-debug-info=build/app/obfuscation
+      - name: Setup iOS signing material (add APP_STORE_CONNECT API key or certificates via Codemagic UI)
+        script: |
+          echo "Using provisioning set up in Codemagic Code signing settings."
+      - name: Build iOS IPA
+        script: |
+          flutter build ipa --release --export-options-plist=$IOS_EXPORT_OPTIONS
+    artifacts:
+      - build/app/outputs/flutter-apk/*.apk
+      - build/app/outputs/bundle/release/*.aab
+      - build/ios/ipa/*.ipa
+      - build/ios/archive/*.xcarchive
+      - flutter_drive.log
+    publishing:
+      email:
+        recipients:
+          - ${CM_EMAIL}

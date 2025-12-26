@@ -159,7 +159,6 @@ class FestiveAudioController extends ChangeNotifier {
 final festiveAudioControllerProvider =
     ChangeNotifierProvider<FestiveAudioController>((ref) {
       final controller = FestiveAudioController();
-      ref.onDispose(controller.dispose);
       // Fire and forget initialization; controller guards against repeats.
       unawaited(controller.initialize());
       return controller;
